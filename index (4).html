@@ -1,0 +1,502 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>De estudiante a profe: Precálculo con Beto el Numérico</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Bricolage+Grotesque:opsz,wght@12..96,700;12..96,800&family=JetBrains+Mono:wght@500;700&display=swap">
+<style>
+/* Layout: una sola página con cinco secciones; cabecera fija con anclas; cuadrícula de cuaderno en las bandas destacadas */
+:root{
+  --paper:#F4F8F7; --surface:#FFFFFF; --surface-2:#E8F0EE; --ink:#11292D; --muted:#4D6467; --line:#D2DDDA;
+  --grid:rgba(13,122,120,.09);
+  --teal:#0D7A78; --teal-ink:#FFFFFF; --teal-soft:#D5ECEA;
+  --marigold:#E3A01C; --marigold-soft:#FAEBC7; --on-marigold:#211703;
+  --f-display:'Bricolage Grotesque','Trebuchet MS','Segoe UI',system-ui,sans-serif;
+  --f-body:'Atkinson Hyperlegible','Segoe UI',Verdana,system-ui,sans-serif;
+  --f-mono:'JetBrains Mono',ui-monospace,Consolas,monospace;
+  --r:14px;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --paper:#0B1719; --surface:#122426; --surface-2:#183033; --ink:#E2EEEC; --muted:#9AB1AE; --line:#25403F;
+  --grid:rgba(59,191,186,.07);
+  --teal:#3BBFBA; --teal-ink:#05201F; --teal-soft:#123B3A;
+  --marigold:#F2BE4D; --marigold-soft:#3A2D10; --on-marigold:#211703; color-scheme:dark;}}
+:root[data-theme="dark"]{
+  --paper:#0B1719; --surface:#122426; --surface-2:#183033; --ink:#E2EEEC; --muted:#9AB1AE; --line:#25403F;
+  --grid:rgba(59,191,186,.07);
+  --teal:#3BBFBA; --teal-ink:#05201F; --teal-soft:#123B3A;
+  --marigold:#F2BE4D; --marigold-soft:#3A2D10; --on-marigold:#211703; color-scheme:dark;}
+
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html{scroll-behavior:smooth}
+body{background:var(--paper);color:var(--ink);font-family:var(--f-body);font-size:17px;line-height:1.6;-webkit-font-smoothing:antialiased}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:60;background:var(--surface)}
+h1,h2,h3{font-family:var(--f-display);line-height:1.15;text-wrap:balance;margin:0;letter-spacing:-.01em}
+p{margin:0}
+a{color:var(--teal)}
+code{font-family:var(--f-mono);font-size:.88em;background:var(--surface-2);padding:1px 6px;border-radius:5px}
+:focus-visible{outline:3px solid var(--marigold);outline-offset:2px;border-radius:6px}
+.wrap{max-width:1100px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.muted{color:var(--muted)}
+.eyebrow{font-family:var(--f-mono);font-size:.75rem;letter-spacing:.12em;text-transform:uppercase;color:var(--teal);font-weight:700}
+.badge{display:inline-block;font-family:var(--f-mono);font-size:.68rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;background:var(--marigold);color:var(--on-marigold);padding:3px 8px;border-radius:6px;vertical-align:middle}
+.ph{background:var(--marigold-soft);border-radius:4px;padding:0 4px;font-style:italic}
+.graph-paper{background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);background-size:28px 28px}
+
+/* Cabecera */
+.site-header{position:sticky;top:env(safe-area-inset-top,0px);z-index:50;background:var(--surface);border-bottom:1px solid var(--line)}
+.nav{display:flex;align-items:center;gap:16px;min-height:64px;position:relative}
+.brand{display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--ink);font-family:var(--f-display);font-weight:800;font-size:1.05rem;margin-right:auto}
+.brand svg{width:36px;height:36px}
+.menu{display:flex;gap:4px;list-style:none;margin:0;padding:0}
+.menu a{display:block;padding:8px 12px;border-radius:999px;text-decoration:none;color:var(--ink);font-weight:700;font-size:.92rem;white-space:nowrap}
+.menu a:hover{background:var(--surface-2)}
+.menu a.main{background:var(--teal);color:var(--teal-ink)}
+.menu-toggle{display:none;border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:10px;padding:8px 12px;font:inherit;font-weight:700;cursor:pointer}
+@media (max-width:960px){
+  .menu-toggle{display:block}
+  .menu{display:none;position:absolute;left:0;right:0;top:100%;flex-direction:column;background:var(--surface);border-bottom:1px solid var(--line);padding:8px max(16px,env(safe-area-inset-right,0px)) 16px max(16px,env(safe-area-inset-left,0px))}
+  .menu.open{display:flex}
+  .menu a{border-radius:10px;padding:12px}
+}
+
+/* Secciones */
+section{scroll-margin-top:72px}
+.section{padding-block:60px;border-top:1px solid var(--line)}
+.section-head{display:flex;flex-direction:column;gap:8px;margin-bottom:28px;max-width:70ch}
+.section-head h2{font-size:clamp(1.7rem,3.2vw,2.3rem)}
+.grid{display:grid;gap:20px;grid-template-columns:repeat(auto-fill,minmax(240px,1fr))}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:22px;min-width:0}
+
+/* Inicio */
+.hero{padding-block:52px}
+.hero-grid{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,.6fr);gap:40px;align-items:center}
+.hero h1{font-size:clamp(2.1rem,5vw,3.5rem);font-weight:800;margin-top:14px}
+.hero h1 em{font-style:normal;color:var(--teal)}
+.hero .sub{font-size:1.22rem;color:var(--muted);margin-top:14px}
+.hero-meta{display:flex;flex-wrap:wrap;gap:8px;margin-top:20px}
+.hero-meta span{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:6px 10px;font-size:.88rem}
+.btn{display:inline-flex;align-items:center;gap:8px;border-radius:12px;padding:12px 18px;font-weight:700;text-decoration:none;background:var(--teal);color:var(--teal-ink);margin-top:26px}
+.beto-big{width:min(230px,60vw);height:auto;display:block;margin:0 auto}
+.disclaimer{display:flex;gap:16px;align-items:flex-start;margin-top:40px;background:var(--marigold-soft);border:2px solid var(--marigold);border-radius:var(--r);padding:18px 20px}
+.disclaimer svg{flex:none;width:28px;height:28px;margin-top:2px}
+.disclaimer p{font-size:1.02rem;max-width:90ch}
+@media (max-width:780px){.hero-grid{grid-template-columns:1fr}.beto-big{width:150px}.hero-grid>div:last-child{order:-1}}
+.beto-body{animation:bob 4s ease-in-out infinite}
+@keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
+@media (prefers-reduced-motion:reduce){.beto-body{animation:none}html{scroll-behavior:auto}}
+.beto-fill-body{fill:var(--teal)} .beto-fill-face{fill:#F7FBFA} .beto-ink{fill:#11292D} .beto-stroke{stroke:#11292D} .beto-mari{fill:var(--marigold)} .beto-mari-s{stroke:var(--marigold)}
+
+/* Nosotros */
+.member{display:flex;flex-direction:column;gap:10px}
+.avatar{width:64px;height:64px;border-radius:18px;display:grid;place-items:center;font-family:var(--f-display);font-weight:800;font-size:1.4rem;color:var(--on-marigold)}
+.member h3{font-size:1.12rem}
+.member .lbl{font-family:var(--f-mono);font-size:.7rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.member p{font-size:.93rem}
+
+/* Temas */
+.topics{list-style:none;margin:0;padding:0;display:grid;gap:12px;grid-template-columns:repeat(auto-fill,minmax(250px,1fr))}
+.topics li{display:flex;gap:14px;align-items:center;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px 16px}
+.topics .n{flex:none;width:38px;height:38px;border-radius:10px;display:grid;place-items:center;background:var(--teal-soft);color:var(--teal);font-family:var(--f-mono);font-weight:700}
+.topics strong{display:block;line-height:1.3}
+.topics small{color:var(--muted);font-size:.85rem}
+
+/* Videotutoriales */
+.videos-band{background-color:var(--surface-2)}
+.video-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:22px}
+@media (max-width:680px){.video-grid{grid-template-columns:1fr}}
+.video-card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);overflow:hidden;display:flex;flex-direction:column;min-width:0}
+.player{position:relative;aspect-ratio:16/9;max-width:100%;background:#11292D}
+.player iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+.vph{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;text-align:center;padding:16px;color:#E2EEEC;background:repeating-linear-gradient(135deg,#163538 0 14px,#11292D 14px 28px)}
+.vph .play{width:56px;height:56px;border-radius:50%;background:#E3A01C;display:grid;place-items:center}
+.vph small{font-size:.84rem;color:#B8CCC9;max-width:34ch}
+.video-body{padding:16px 18px 18px;display:flex;flex-direction:column;gap:6px}
+.video-body h3{font-family:var(--f-body);font-size:1.06rem;font-weight:700}
+.vmeta{display:flex;flex-wrap:wrap;gap:4px 14px;font-size:.88rem;color:var(--muted)}
+.vtag{font-family:var(--f-mono);font-size:.72rem;font-weight:700;color:var(--teal);background:var(--teal-soft);padding:3px 8px;border-radius:6px;align-self:flex-start}
+.howto{margin-top:40px}
+.howto h3{font-size:1.35rem;margin-bottom:6px}
+.how-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px;margin-top:18px}
+@media (max-width:760px){.how-grid{grid-template-columns:1fr}}
+.how-grid>div{min-width:0}
+.how-grid h4{font-family:var(--f-display);font-size:1.15rem;margin:0 0 10px}
+.steps{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:8px;font-size:.95rem}
+.code{font-family:var(--f-mono);font-size:.8rem;line-height:1.6;background:var(--paper);border:1px solid var(--line);border-radius:10px;padding:12px;overflow-x:auto;white-space:pre;margin-top:12px}
+.code .hl{color:var(--teal);font-weight:700}
+.note{font-size:.9rem;color:var(--muted);margin-top:16px}
+
+/* Convención */
+.facts{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-bottom:28px}
+@media (max-width:700px){.facts{grid-template-columns:1fr}}
+.fact{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px}
+.fact .eyebrow{display:block;margin-bottom:4px}
+.sub-title{font-size:1.2rem;margin:32px 0 14px}
+.gallery{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+@media (max-width:700px){.gallery{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.gallery figure{margin:0;display:flex;flex-direction:column;gap:6px}
+.gallery img{width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:12px;display:block}
+.gallery figcaption{font-size:.86rem;color:var(--muted)}
+.conv-video{max-width:640px}
+.exp p{font-size:.95rem;margin-top:6px}
+
+/* Publicar */
+.host-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:18px}
+@media (max-width:980px){.host-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:560px){.host-grid{grid-template-columns:1fr}}
+.host{display:flex;flex-direction:column;gap:10px}
+.host.rec{border:2px solid var(--teal)}
+.host h3{font-size:1.2rem}
+.host p{font-size:.93rem}
+.host .adv{font-size:.9rem;background:var(--surface-2);border-radius:10px;padding:8px 10px}
+.host .adv b{color:var(--teal)}
+.host .url{font-family:var(--f-mono);font-size:.78rem;color:var(--muted);word-break:break-all}
+.host .btn{margin-top:auto;justify-content:center;padding:10px 14px}
+.host .btn-alt{background:var(--surface);color:var(--ink);border:1px solid var(--line)}
+.rec-tag{align-self:flex-start;font-family:var(--f-mono);font-size:.68rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;background:var(--teal);color:var(--teal-ink);padding:3px 8px;border-radius:6px}
+.final-msg{display:flex;gap:16px;align-items:flex-start;margin-top:26px;background:var(--teal-soft);border:2px solid var(--teal);border-radius:var(--r);padding:18px 20px}
+.final-msg svg{flex:none;width:28px;height:28px;margin-top:2px}
+.final-msg p{font-size:1.02rem;max-width:90ch}
+
+footer{border-top:1px solid var(--line);background:var(--surface);padding-block:26px;font-size:.88rem;color:var(--muted)}
+footer .wrap{display:flex;flex-wrap:wrap;justify-content:space-between;gap:10px}
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <nav class="wrap nav" aria-label="Principal">
+    <a class="brand" href="#inicio"><span id="brand-beto"></span>Precálculo con Beto</a>
+    <button class="menu-toggle" id="menu-toggle" aria-expanded="false" aria-controls="menu">Menú</button>
+    <ul class="menu" id="menu">
+      <li><a href="#inicio">Inicio</a></li>
+      <li><a href="#nosotros">Nosotros</a></li>
+      <li><a href="#temas">Temas</a></li>
+      <li><a href="#videotutoriales" class="main">Videotutoriales</a></li>
+      <li><a href="#convencion">Convención 2026</a></li>
+      <li><a href="#publicar">Publicar</a></li>
+    </ul>
+  </nav>
+</header>
+
+<main>
+  <!-- ============ INICIO ============ -->
+  <section id="inicio" class="hero graph-paper">
+    <div class="wrap">
+      <div class="hero-grid">
+        <div>
+          <span class="eyebrow">Universidad Mariano Gálvez de Guatemala · Sede Jalapa</span>
+          <h1>De estudiante a profe: <em>Precálculo con Beto el Numérico</em></h1>
+          <p class="sub">Una guía digital creada por estudiantes para estudiantes</p>
+          <div class="hero-meta">
+            <span>Facultad de Ingeniería en Sistemas y Ciencias de la Información</span>
+            <span>Precálculo · Segundo semestre 2026</span>
+          </div>
+          <a class="btn" href="#videotutoriales">Ver los videotutoriales →</a>
+        </div>
+        <div id="hero-beto"></div>
+      </div>
+      <div class="disclaimer" role="note">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="11" fill="var(--marigold)"/><rect x="11" y="10" width="2" height="8" rx="1" fill="#211703"/><circle cx="12" cy="6.8" r="1.3" fill="#211703"/></svg>
+        <p>Esta página web es únicamente un ejemplo demostrativo generado con Claude (inteligencia artificial). Su propósito es mostrar algunas posibilidades para desarrollar el proyecto final de Precálculo. Cada grupo tiene libertad para diseñar su propia página web y agregar los recursos que considere necesarios, utilizando su creatividad.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ NOSOTROS ============ -->
+  <section id="nosotros" class="section">
+    <div class="wrap">
+      <div class="section-head">
+        <span class="eyebrow">Nosotros</span>
+        <h2>Integrantes del grupo</h2>
+        <p class="muted">Presenten a cada integrante con su foto o avatar, los temas que desarrolló y sus videotutoriales. <span class="badge">Nombres de ejemplo</span></p>
+      </div>
+      <div class="grid" id="team"></div>
+    </div>
+  </section>
+
+  <!-- ============ TEMAS ============ -->
+  <section id="temas" class="section graph-paper">
+    <div class="wrap">
+      <div class="section-head">
+        <span class="eyebrow">Temas de Precálculo</span>
+        <h2>Los diez temas del curso</h2>
+        <p class="muted">Cada grupo decide cómo desarrollar cada tema: explicaciones, fórmulas, ejemplos, gráficas o ejercicios.</p>
+      </div>
+      <ol class="topics" id="topics"></ol>
+    </div>
+  </section>
+
+  <!-- ============ VIDEOTUTORIALES ============ -->
+  <section id="videotutoriales" class="section videos-band">
+    <div class="wrap">
+      <div class="section-head">
+        <span class="eyebrow">Videotutoriales · sección principal</span>
+        <h2>Nuestros videotutoriales</h2>
+        <p class="muted">Cada integrante elabora al menos dos videotutoriales. Los videos se reproducen aquí mismo, sin salir de la página. Los espacios marcados como <span class="badge">Espacio para video</span> esperan el enlace real.</p>
+      </div>
+      <div class="video-grid" id="videos"></div>
+
+      <div class="howto panel">
+        <span class="eyebrow">Guía para el grupo</span>
+        <h3>Cómo insertar un video para que se reproduzca en la página</h3>
+        <p class="muted">Se usa un reproductor <code>&lt;iframe&gt;</code>. Solo cambia la dirección del video según la plataforma.</p>
+        <div class="how-grid">
+          <div>
+            <h4>YouTube</h4>
+            <ol class="steps">
+              <li>Suban el video como <strong>Público</strong> o <strong>No listado</strong> y dejen activada la opción <strong>Permitir inserción</strong>.</li>
+              <li>Copien el enlace: <code>youtube.com/watch?v=<b>ID</b></code> o <code>youtu.be/<b>ID</b></code>.</li>
+              <li>Usen ese <b>ID</b> en la dirección <code>youtube.com/embed/ID</code>.</li>
+            </ol>
+<div class="code">&lt;iframe
+  src="https://www.youtube.com/embed/<span class="hl">ID_DEL_VIDEO</span>"
+  title="Título del videotutorial"
+  allowfullscreen&gt;
+&lt;/iframe&gt;</div>
+          </div>
+          <div>
+            <h4>Google Drive</h4>
+            <ol class="steps">
+              <li>Compartan el archivo como <strong>Cualquier persona con el enlace · Lector</strong>.</li>
+              <li>Copien el enlace: <code>drive.google.com/file/d/<b>ID</b>/view</code>.</li>
+              <li>Cambien <code>/view</code> por <code>/preview</code> al final.</li>
+            </ol>
+<div class="code">&lt;iframe
+  src="https://drive.google.com/file/d/<span class="hl">ID_DEL_ARCHIVO</span>/preview"
+  title="Título del videotutorial"
+  allowfullscreen&gt;
+&lt;/iframe&gt;</div>
+          </div>
+        </div>
+        <p class="note">En esta página de ejemplo no hace falta escribir el iframe: basta con pegar el enlace normal en el campo <code>url</code> de la lista <code>VIDEOS</code>, al inicio del código, y la página hace la conversión. Si un video de Drive es privado, el visitante verá un aviso de permisos en lugar del video. Drive puede tardar unos minutos en procesar un video recién subido.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ CONVENCIÓN 2026 ============ -->
+  <section id="convencion" class="section">
+    <div class="wrap">
+      <div class="section-head">
+        <span class="eyebrow">Convención 2026</span>
+        <h2>Nuestra experiencia en la Convención 2026</h2>
+        <p><span class="ph">[Breve presentación de la actividad redactada por el grupo: propósito de la convención y cómo participaron.]</span></p>
+      </div>
+      <div class="facts">
+        <div class="fact"><span class="eyebrow">Fecha</span><span class="ph">[dd/mm/2026]</span></div>
+        <div class="fact"><span class="eyebrow">Lugar</span><span class="ph">[Nombre del lugar]</span></div>
+        <div class="fact"><span class="eyebrow">Organiza</span><span class="ph">[Entidad organizadora]</span></div>
+      </div>
+
+      <h3 class="sub-title">Fotografías</h3>
+      <div class="gallery" id="gallery"></div>
+
+      <h3 class="sub-title">Video de la actividad</h3>
+      <div class="conv-video" id="conv-video"></div>
+
+      <h3 class="sub-title">Experiencias</h3>
+      <div class="grid" id="experiences"></div>
+    </div>
+  </section>
+
+  <!-- ============ PUBLICAR ============ -->
+  <section id="publicar" class="section graph-paper">
+    <div class="wrap">
+      <div class="section-head">
+        <span class="eyebrow">Guía informativa</span>
+        <h2>¿Dónde puedo publicar mi página web gratis?</h2>
+        <p class="muted">Para entregar el proyecto, la página debe estar publicada en internet con un enlace público que puedan compartir con el docente. Estas plataformas tienen opciones gratuitas.</p>
+      </div>
+      <div class="host-grid">
+        <article class="panel host rec">
+          <span class="rec-tag">Recomendado para principiantes</span>
+          <h3>Netlify</h3>
+          <p>Arrastran la carpeta del proyecto a la página de Netlify Drop y en segundos obtienen un enlace público.</p>
+          <p class="adv"><b>Ventaja:</b> es la opción más sencilla si trabajan únicamente con HTML. No necesitan instalar nada.</p>
+          <span class="url">app.netlify.com/drop</span>
+          <a class="btn" href="https://app.netlify.com/drop" target="_blank" rel="noopener">Abrir Netlify ↗</a>
+        </article>
+        <article class="panel host">
+          <h3>GitHub Pages</h3>
+          <p>Aloja gratuitamente páginas HTML, CSS y JavaScript guardadas en un repositorio de GitHub.</p>
+          <p class="adv"><b>Ventaja:</b> aprenden a usar GitHub, una herramienta muy utilizada en Ingeniería en Sistemas.</p>
+          <span class="url">pages.github.com</span>
+          <a class="btn btn-alt" href="https://pages.github.com/" target="_blank" rel="noopener">Abrir GitHub Pages ↗</a>
+        </article>
+        <article class="panel host">
+          <h3>Vercel</h3>
+          <p>Publica proyectos web gratuitamente, incluidas páginas HTML estáticas.</p>
+          <p class="adv"><b>Ventaja:</b> se conecta con GitHub y actualiza la página cada vez que guardan cambios.</p>
+          <span class="url">vercel.com</span>
+          <a class="btn btn-alt" href="https://vercel.com/" target="_blank" rel="noopener">Abrir Vercel ↗</a>
+        </article>
+        <article class="panel host">
+          <h3>Cloudflare Pages</h3>
+          <p>Aloja páginas web estáticas gratuitamente y permite compartirlas mediante un enlace público.</p>
+          <p class="adv"><b>Ventaja:</b> la página carga rápido desde cualquier lugar gracias a la red de Cloudflare.</p>
+          <span class="url">pages.cloudflare.com</span>
+          <a class="btn btn-alt" href="https://pages.cloudflare.com/" target="_blank" rel="noopener">Abrir Cloudflare Pages ↗</a>
+        </article>
+      </div>
+      <div class="final-msg" role="note">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="11" fill="var(--teal)"/><path d="M7 12.5l3.2 3.2L17 9" fill="none" stroke="var(--teal-ink)" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <p>Puedes utilizar cualquiera de estas plataformas u otra que prefieras. Lo importante es que tu página web esté publicada, funcione correctamente y pueda consultarse mediante un enlace público. Antes de entregar tu proyecto, comprueba que los videotutoriales se reproduzcan directamente dentro de la página.</p>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <span>Universidad Mariano Gálvez de Guatemala · Facultad de Ingeniería en Sistemas y Ciencias de la Información · Sede Jalapa</span>
+    <span>Precálculo · Segundo semestre 2026 · Ejemplo demostrativo</span>
+  </div>
+</footer>
+
+<script>
+/* =====================================================================
+   DATOS EDITABLES: el grupo cambia solo esta parte
+   ===================================================================== */
+
+// Integrantes (nombres FICTICIOS de ejemplo)
+const EQUIPO = [
+  { nombre:'Ana Lucía Morales',        color:'#E3A01C', temas:'Exponentes y radicales · Expresiones racionales', participacion:'Desarrolló los temas de álgebra y editó los videos del grupo.' },
+  { nombre:'Carlos Eduardo Ramírez',   color:'#7FC8C4', temas:'Ecuaciones · Modelado con ecuaciones · Geometría de coordenadas', participacion:'Redactó los problemas de modelado y organizó la sección de la convención.' },
+  { nombre:'María José Hernández',     color:'#D6B4E4', temas:'Rectas · Funciones', participacion:'Diseñó las gráficas y revisó las explicaciones de cada tema.' },
+  { nombre:'Diego Alejandro Castillo', color:'#F2C66B', temas:'Análisis de funciones · Cuadráticas · Polinomios', participacion:'Construyó la página web e integró los videotutoriales.' }
+];
+
+const TEMAS = [
+  ['Exponentes y radicales','Propiedades, simplificación y operaciones'],
+  ['Expresiones racionales','Simplificación, operaciones y restricciones'],
+  ['Ecuaciones','Resolución algebraica y comprobación'],
+  ['Modelado con ecuaciones','Planteamiento y resolución de problemas'],
+  ['Geometría de coordenadas','Distancia, punto medio y plano cartesiano'],
+  ['Rectas','Pendiente, ecuación, paralelas y perpendiculares'],
+  ['Funciones','Concepto, notación, evaluación, dominio y rango'],
+  ['Análisis de funciones','Gráficas, intervalos, máximos y mínimos'],
+  ['Funciones cuadráticas','Vértice, eje de simetría e intersecciones'],
+  ['Funciones polinomiales','Comportamiento, división y ceros reales']
+];
+
+/* Videotutoriales. Para publicar un video, peguen su enlace en "url":
+     YouTube: https://www.youtube.com/watch?v=XXXXXXXXXXX  o  https://youtu.be/XXXXXXXXXXX
+     Drive:   https://drive.google.com/file/d/ID_DEL_ARCHIVO/view
+   Si "url" está vacío, se muestra un espacio reservado. */
+const VIDEOS = [
+  { titulo:'Simplificación de exponentes fraccionarios', estudiante:'Ana Lucía Morales',        tema:'Tema 1 · Exponentes y radicales',  duracion:'6 min', url:'' },
+  { titulo:'Ecuaciones con radicales y comprobación',     estudiante:'Carlos Eduardo Ramírez',   tema:'Tema 3 · Ecuaciones',              duracion:'7 min', url:'' },
+  { titulo:'Ecuación de la recta por dos puntos',         estudiante:'María José Hernández',     tema:'Tema 6 · Rectas',                  duracion:'5 min', url:'' },
+  { titulo:'Vértice de una parábola',                     estudiante:'Diego Alejandro Castillo', tema:'Tema 9 · Funciones cuadráticas',   duracion:'6 min', url:'' }
+];
+
+// Convención 2026: textos de EJEMPLO. En "src" pongan la ruta de su foto, por ejemplo "fotos/foto1.jpg".
+const FOTOS = [
+  { src:'', descripcion:'[Descripción de la foto 1]' },
+  { src:'', descripcion:'[Descripción de la foto 2]' },
+  { src:'', descripcion:'[Descripción de la foto 3]' }
+];
+const VIDEO_CONVENCION = { titulo:'[Resumen en video de la convención]', estudiante:'[Nombre del grupo]', tema:'Convención 2026', duracion:'[min]', url:'' };
+const EXPERIENCIAS = [
+  { titulo:'Lo que aprendimos', texto:'[Qué aprendieron durante la actividad.]' },
+  { titulo:'La experiencia más importante', texto:'[Qué conferencia, taller o momento les pareció más valioso.]' },
+  { titulo:'Relación con Ingeniería en Sistemas', texto:'[Cómo se relaciona la convención con su formación.]' }
+];
+
+/* =====================================================================
+   FUNCIONAMIENTO
+   ===================================================================== */
+const $ = s => document.querySelector(s);
+const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+// Convierte un enlace normal de YouTube o Google Drive en la dirección del reproductor
+function enlaceInsertable(url){
+  const u = String(url || '').trim();
+  let m = u.match(/(?:youtube\.com\/(?:watch\?(?:.*&)?v=|embed\/|shorts\/)|youtu\.be\/)([\w-]{11})/i);
+  if (m) return 'https://www.youtube.com/embed/' + m[1];
+  m = u.match(/drive\.google\.com\/(?:file\/d\/|open\?(?:.*&)?id=)([\w-]{20,})/i);
+  if (m) return 'https://drive.google.com/file/d/' + m[1] + '/preview';
+  return null;
+}
+
+function reproductor(v){
+  if (!v.url) return `<div class="player"><div class="vph"><span class="play"><svg width="22" height="22" viewBox="0 0 24 24"><path d="M8 5v14l11-7z" fill="#211703"/></svg></span><strong>Espacio para el videotutorial</strong><small>Peguen aquí el enlace de YouTube o Google Drive (campo url).</small></div></div>`;
+  const src = enlaceInsertable(v.url);
+  if (!src) return `<div class="player"><div class="vph"><strong>Enlace no compatible</strong><small>Usen un enlace de YouTube o de un archivo de Google Drive.</small></div></div>`;
+  return `<div class="player"><iframe src="${src}" title="${esc(v.titulo)}" loading="lazy" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div>`;
+}
+
+function tarjetaVideo(v){
+  return `<article class="video-card">${reproductor(v)}
+    <div class="video-body">
+      <span class="vtag">${esc(v.tema)}</span>
+      <h3>${esc(v.titulo)} ${v.url ? '' : '<span class="badge">Espacio para video</span>'}</h3>
+      <div class="vmeta"><span>Explica: <strong>${esc(v.estudiante)}</strong></span><span>Duración: ${esc(v.duracion)}</span></div>
+    </div></article>`;
+}
+
+function fotoEjemplo(i){
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300"><rect width="400" height="300" fill="#183033"/><g fill="none" stroke="#9AB1AE" stroke-width="6" stroke-linejoin="round"><rect x="150" y="110" width="100" height="70" rx="10"/><circle cx="200" cy="145" r="20"/><path d="M175 110l10-14h30l10 14"/></g><text x="200" y="220" text-anchor="middle" font-family="sans-serif" font-size="18" fill="#E2EEEC">Foto ${i+1}</text></svg>`;
+  return 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg);
+}
+
+function beto(cls = '', anim = false){
+  return `<svg class="${cls}" viewBox="0 0 200 232" role="img" aria-label="Beto el Numérico">
+  <g class="${anim ? 'beto-body' : ''}">
+    <ellipse cx="74" cy="214" rx="18" ry="9" class="beto-ink"/><ellipse cx="126" cy="214" rx="18" ry="9" class="beto-ink"/>
+    <path d="M44 132 Q20 140 16 162" stroke-width="14" fill="none" stroke-linecap="round" style="stroke:var(--teal)"/>
+    <circle cx="16" cy="164" r="9" class="beto-fill-face beto-stroke" stroke-width="3"/>
+    <path d="M158 126 Q184 112 186 86" stroke-width="14" fill="none" stroke-linecap="round" style="stroke:var(--teal)"/>
+    <circle cx="186" cy="82" r="9" class="beto-fill-face beto-stroke" stroke-width="3"/>
+    <rect x="38" y="56" width="124" height="152" rx="40" class="beto-fill-body beto-stroke" stroke-width="4"/>
+    <rect x="54" y="76" width="92" height="74" rx="28" class="beto-fill-face beto-stroke" stroke-width="3"/>
+    <circle cx="80" cy="106" r="15" fill="#fff" class="beto-stroke" stroke-width="4"/><circle cx="120" cy="106" r="15" fill="#fff" class="beto-stroke" stroke-width="4"/>
+    <line x1="95" y1="105" x2="105" y2="105" class="beto-stroke" stroke-width="4"/>
+    <circle cx="82" cy="108" r="5.5" class="beto-ink"/><circle cx="122" cy="108" r="5.5" class="beto-ink"/>
+    <ellipse cx="66" cy="128" rx="7" ry="4" class="beto-mari" opacity=".7"/><ellipse cx="134" cy="128" rx="7" ry="4" class="beto-mari" opacity=".7"/>
+    <path d="M86 128 Q100 141 114 128" fill="none" class="beto-stroke" stroke-width="4" stroke-linecap="round"/>
+    <text x="100" y="186" text-anchor="middle" font-family="JetBrains Mono, monospace" font-weight="700" font-size="26" class="beto-mari">f(x)</text>
+    <path d="M60 60 L140 60 L140 44 Q100 34 60 44 Z" class="beto-ink"/>
+    <polygon points="100,8 172,34 100,58 28,34" class="beto-ink"/>
+    <path d="M100 34 L156 44 L156 70" fill="none" class="beto-mari-s" stroke-width="4" stroke-linecap="round"/>
+    <rect x="149" y="68" width="14" height="16" rx="3" class="beto-mari"/>
+  </g></svg>`;
+}
+
+// Dibujar el contenido
+$('#brand-beto').innerHTML = beto();
+$('#hero-beto').innerHTML = beto('beto-big', true);
+
+$('#team').innerHTML = EQUIPO.map(p => {
+  const ini = p.nombre.split(' ').slice(0, 2).map(w => w[0]).join('');
+  const vids = VIDEOS.filter(v => v.estudiante === p.nombre).length;
+  return `<article class="panel member">
+    <span class="avatar" style="background:${p.color}">${ini}</span>
+    <h3>${esc(p.nombre)}</h3>
+    <div><span class="lbl">Temas</span><p>${esc(p.temas)}</p></div>
+    <div><span class="lbl">Videotutoriales</span><p>${vids} publicado${vids === 1 ? '' : 's'} en esta página</p></div>
+    <div><span class="lbl">Participación</span><p class="muted">${esc(p.participacion)}</p></div>
+  </article>`;
+}).join('');
+
+$('#topics').innerHTML = TEMAS.map(([t, d], i) => `<li><span class="n">${i + 1}</span><span><strong>${t}</strong><small>${d}</small></span></li>`).join('');
+
+$('#videos').innerHTML = VIDEOS.map(tarjetaVideo).join('');
+
+$('#gallery').innerHTML = FOTOS.map((f, i) => `<figure><img src="${f.src || fotoEjemplo(i)}" alt="${esc(f.descripcion)}"><figcaption>${esc(f.descripcion)}</figcaption></figure>`).join('');
+$('#conv-video').innerHTML = tarjetaVideo(VIDEO_CONVENCION);
+$('#experiences').innerHTML = EXPERIENCIAS.map(e => `<div class="panel exp"><h3 style="font-size:1.05rem">${esc(e.titulo)}</h3><p><span class="ph">${esc(e.texto)}</span></p></div>`).join('');
+
+// Menú en teléfonos
+const menu = $('#menu'), toggle = $('#menu-toggle');
+toggle.addEventListener('click', () => toggle.setAttribute('aria-expanded', menu.classList.toggle('open')));
+menu.addEventListener('click', e => { if (e.target.closest('a')) { menu.classList.remove('open'); toggle.setAttribute('aria-expanded', 'false'); } });
+</script>
+
+</body>
+</html>
